@@ -30,7 +30,7 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
         }
         prev = curr;
     }
-    return prev[n] == d;
+    return prev[n] <= d;
 }
 
 bool is_adjacent(const string& word1, const string& word2)
@@ -38,7 +38,42 @@ bool is_adjacent(const string& word1, const string& word2)
     return edit_distance_within(word1, word2, 1);
 }
 
+vector<string> generate_neighbors(const string& word, const set<string>& word_list)
+{
+    vector<string> neighbors;
+    string potential_word;
 
+    for(size_t i = 0; i < word.size(); ++i)
+    {
+        potential_word = word;
+        for(char chr = 'a'; chr <= 'z'; chr++)
+        {
+            if(potential_word[i] == chr)
+                continue;
+            potential_word[i] = chr;
+            if(word_list.find(potential_word) != word_list.end())
+                neighbors.push_back(potential_word);
+        }
+    }
+
+    for(size_t i = 0; i < word.size(); ++i)
+    {
+        potential_word = word.substr(0, i) + word.substr(i + 1);
+        if(!potential_word.empty() && word_list.find(potential_word) != word_list.end());
+            neighbors.push_back(potential_word);
+    }
+
+    for(size_t i = 0; i <= word.size(); ++i)
+    {
+        for(char chr = 'a'; chr <= 'z'; ++chr)
+        {
+            potential_word = word.substr(0, i) + chr + word.substr(i);
+            if(word_list.find(potential_word) != word_list.end())
+                neighbors.push_back(potential_word);
+        }
+    }
+    return neighbors;
+}
 vector<string> generate_word_ladder(const string& begin_word, const string& end_word, const set<string>& word_list)
 {
     if(begin_word == end_word)
@@ -55,19 +90,18 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
         vector<string> ladder = lq.front();
         lq.pop();
         string last_word = ladder.back();
-        for(string word : word_list)
+
+        vector<string> neighbors = generate_neighbors(last_word, word_list);
+        for(const string &neighbor : neighbors)
         {
-            if(is_adjacent(last_word, word))
+            if(visited.find(neighbor) == visited.end())
             {
-                if(visited.find(word) == visited.end())
-                {
-                    visited.insert(word);
-                    vector<string> new_ladder = ladder;
-                    new_ladder.push_back(word);
-                    if(word == end_word)
-                        return new_ladder;
-                    lq.push(new_ladder);
-                }
+                visited.insert(neighbor);
+                vector<string> new_ladder = ladder;
+                new_ladder.push_back(neighbor);
+                if(neighbor == end_word)
+                    return new_ladder;
+                lq.push(new_ladder);
             }
         }
     }
@@ -87,9 +121,11 @@ void load_words(set<string> & word_list, const string& file_name)
     string line;
 
     while(getline(f, line))
+    {
+        transform(line.begin(), line.end(), line.begin(), ::tolower);
         word_list.insert(line);
+    }
     f.close();
-
 }
 
 void print_word_ladder(const vector<string>& ladder)
