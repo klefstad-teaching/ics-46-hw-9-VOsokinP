@@ -2,12 +2,11 @@
 
 void error(string word1, string word2, string msg)
 {
-    cerr << "Error: " << msg  << ". \nIn words: " << word1 << " and " << word2 << endl;
+    cerr << "Error: " << msg  << ". \nWords: " << word1 << " and " << word2 << endl;
 }
 
 bool edit_distance_within(const std::string& str1, const std::string& str2, int d)
 {
-
 	int m = str1.size();
     int n = str2.size();
 
@@ -31,7 +30,7 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
         }
         prev = curr;
     }
-    return prev[n] <= d;
+    return prev[n] == d;
 }
 
 bool is_adjacent(const string& word1, const string& word2)
@@ -60,7 +59,7 @@ vector<string> generate_word_ladder(const string& begin_word, const string& end_
         {
             if(is_adjacent(last_word, word))
             {
-                if(!visited.contains(word))
+                if(visited.find(word) == visited.end())
                 {
                     visited.insert(word);
                     vector<string> new_ladder = ladder;
@@ -95,11 +94,15 @@ void load_words(set<string> & word_list, const string& file_name)
 
 void print_word_ladder(const vector<string>& ladder)
 {
-    for(int i = 0; i < ladder.size(); ++i)
+    if(ladder.size() == 0)
+        cout << "No word ladder found.";
+    else
     {
-        cout << ladder[i];
-        if(i < ladder.size() - 1)
-            cout << " ";
+        cout << "Word ladder found: ";
+        for(int i = 0; i < ladder.size(); ++i)
+        {
+            cout << ladder[i] << " ";
+        }
     }
     cout << endl;
 }
