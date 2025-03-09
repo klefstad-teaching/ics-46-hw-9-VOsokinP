@@ -59,7 +59,7 @@ vector<string> generate_neighbors(const string& word, const set<string>& word_li
     for(size_t i = 0; i < word.size(); ++i)
     {
         potential_word = word.substr(0, i) + word.substr(i + 1);
-        if(!potential_word.empty() && word_list.find(potential_word) != word_list.end());
+        if(!potential_word.empty() && word_list.find(potential_word) != word_list.end())
             neighbors.push_back(potential_word);
     }
 
