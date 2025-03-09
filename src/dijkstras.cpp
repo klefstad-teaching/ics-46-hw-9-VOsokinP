@@ -13,7 +13,7 @@ vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& prev
 
     while(!minHeap.empty())
     {
-        int u = minHeap.top().first;
+        int u = minHeap.top().second;
         minHeap.pop();
         if(visited[u])
             continue;
